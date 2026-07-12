@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core';
 import type { Character, ItemSize, Location } from './types';
 import { deleteItem, moveItem } from './rules';
-import { createDefaultCharacter, createItem } from './character';
+import { createDefaultCharacter, createItem, duplicateItem } from './character';
 import { useLocalStorage } from './useLocalStorage';
 import { Sheet } from './components/Sheet';
 import { ItemList } from './components/ItemList';
@@ -55,6 +55,12 @@ export default function App() {
     setCharacter((c) => deleteItem(c, id));
   }
 
+  function handleDuplicate(id: string) {
+    const item = findItem(character, id);
+    if (!item) return;
+    setCharacter((c) => ({ ...c, tray: [...c.tray, duplicateItem(item)] }));
+  }
+
   function handleAdd(
     name: string,
     size: ItemSize,
@@ -88,13 +94,14 @@ export default function App() {
 
         <div className="app__grid">
           <div className="app__main">
-            <Sheet character={character} onDelete={handleDelete} />
+            <Sheet character={character} onDelete={handleDelete} onDuplicate={handleDuplicate} />
             <ItemList
               id="pockets"
               title="Pockets"
               subtitle="trivial items only"
               items={character.pockets}
               onDelete={handleDelete}
+              onDuplicate={handleDuplicate}
               emptyHint="Drop coins, gems, and other light odds and ends here."
             />
           </div>
@@ -117,6 +124,7 @@ export default function App() {
               subtitle="drag these into slots"
               items={character.tray}
               onDelete={handleDelete}
+              onDuplicate={handleDuplicate}
               emptyHint="Newly added items land here."
             />
           </div>

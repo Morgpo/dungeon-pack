@@ -22,6 +22,11 @@ export function createItem(
   };
 }
 
+/** Copy an item with a fresh id, for placing alongside the original. */
+export function duplicateItem(item: Item): Item {
+  return { ...item, id: createId() };
+}
+
 export function createDefaultCharacter(): Character {
   return {
     id: createId(),

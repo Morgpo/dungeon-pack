@@ -8,11 +8,12 @@ interface Props {
   subtitle?: string;
   items: Item[];
   onDelete: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   emptyHint: string;
 }
 
 /** A droppable list location (Pockets or the unassigned Tray). */
-export function ItemList({ id, title, subtitle, items, onDelete, emptyHint }: Props) {
+export function ItemList({ id, title, subtitle, items, onDelete, onDuplicate, emptyHint }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
@@ -27,7 +28,7 @@ export function ItemList({ id, title, subtitle, items, onDelete, emptyHint }: Pr
         ) : (
           <div className="item-list__items">
             {items.map((item) => (
-              <ItemCard key={item.id} item={item} onDelete={onDelete} />
+              <ItemCard key={item.id} item={item} onDelete={onDelete} onDuplicate={onDuplicate} />
             ))}
           </div>
         )}

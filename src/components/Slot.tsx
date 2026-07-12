@@ -7,6 +7,7 @@ interface Props {
   label: string;
   item?: Item;
   onDelete: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   /** Optional small badge, e.g. the room number or "STR +1". */
   badge?: string;
   variant?: 'equipment' | 'room';
@@ -14,7 +15,16 @@ interface Props {
   coveredBy?: string;
 }
 
-export function Slot({ address, label, item, onDelete, badge, variant = 'room', coveredBy }: Props) {
+export function Slot({
+  address,
+  label,
+  item,
+  onDelete,
+  onDuplicate,
+  badge,
+  variant = 'room',
+  coveredBy,
+}: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: address });
   const covered = !item && !!coveredBy;
 
@@ -31,7 +41,7 @@ export function Slot({ address, label, item, onDelete, badge, variant = 'room', 
       </div>
       <div className="slot__body">
         {item ? (
-          <ItemCard item={item} onDelete={onDelete} />
+          <ItemCard item={item} onDelete={onDelete} onDuplicate={onDuplicate} />
         ) : covered ? (
           <span className="slot__covered">⟵ {coveredBy} (both hands)</span>
         ) : (

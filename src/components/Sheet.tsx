@@ -5,10 +5,11 @@ import { Slot } from './Slot';
 interface Props {
   character: Character;
   onDelete: (id: string) => void;
+  onDuplicate?: (id: string) => void;
 }
 
 /** The dungeon-sheet layout: hands, body column, and the 6 backpack rooms. */
-export function Sheet({ character, onDelete }: Props) {
+export function Sheet({ character, onDelete, onDuplicate }: Props) {
   const bodyIds = bodySlotIds(character.strength);
   const mainHand = character.slots['mainHand'];
 
@@ -21,6 +22,7 @@ export function Sheet({ character, onDelete }: Props) {
           variant="equipment"
           item={mainHand}
           onDelete={onDelete}
+          onDuplicate={onDuplicate}
         />
         <Slot
           address="offHand"
@@ -28,6 +30,7 @@ export function Sheet({ character, onDelete }: Props) {
           variant="equipment"
           item={character.slots['offHand']}
           onDelete={onDelete}
+          onDuplicate={onDuplicate}
           coveredBy={mainHand?.twoHanded ? mainHand.name : undefined}
         />
       </div>
@@ -46,6 +49,7 @@ export function Sheet({ character, onDelete }: Props) {
                 badge={isStrength ? `STR +${id.split('-')[2]}` : undefined}
                 item={character.slots[id]}
                 onDelete={onDelete}
+                onDuplicate={onDuplicate}
               />
             );
           })}
@@ -63,6 +67,7 @@ export function Sheet({ character, onDelete }: Props) {
               badge={`${i + 1}`}
               item={character.slots[id]}
               onDelete={onDelete}
+              onDuplicate={onDuplicate}
             />
           ))}
         </div>

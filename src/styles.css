@@ -327,6 +327,27 @@ body {
   color: #fff;
 }
 
+.item-card__duplicate {
+  position: absolute;
+  top: 4px;
+  right: 24px;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.item-card__duplicate:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* ---- Item lists (pockets / tray) ---------------------------------------- */
 
 .item-list {

@@ -4,11 +4,12 @@ import type { Item } from '../types';
 interface Props {
   item: Item;
   onDelete?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   /** When true, render a static (non-draggable) copy for the drag overlay. */
   overlay?: boolean;
 }
 
-export function ItemCard({ item, onDelete, overlay = false }: Props) {
+export function ItemCard({ item, onDelete, onDuplicate, overlay = false }: Props) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: item.id,
     disabled: overlay,
@@ -34,6 +35,21 @@ export function ItemCard({ item, onDelete, overlay = false }: Props) {
         </span>
         {item.notes && <span className="item-card__notes" title={item.notes}>{item.notes}</span>}
       </div>
+      {onDuplicate && !overlay && (
+        <button
+          type="button"
+          className="item-card__duplicate"
+          aria-label={`Duplicate ${item.name}`}
+          title="Copy to Unassigned"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate(item.id);
+          }}
+        >
+          ⧉
+        </button>
+      )}
       {onDelete && !overlay && (
         <button
           type="button"
