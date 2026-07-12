@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import type { Character, Location } from './types';
+import type { Character, ItemSize, Location } from './types';
 import { deleteItem, moveItem } from './rules';
 import { createDefaultCharacter, createItem } from './character';
 import { useLocalStorage } from './useLocalStorage';
@@ -18,7 +18,7 @@ import { AddItemForm } from './components/AddItemForm';
 import { Summary } from './components/Summary';
 import { ItemCard } from './components/ItemCard';
 
-const STORAGE_KEY = 'dungeon-pack.character.v1';
+const STORAGE_KEY = 'dungeon-pack.character.v2';
 
 export default function App() {
   const [character, setCharacter] = useLocalStorage<Character>(
@@ -55,8 +55,13 @@ export default function App() {
     setCharacter((c) => deleteItem(c, id));
   }
 
-  function handleAdd(name: string, weight: number, quantity: number, notes: string) {
-    const item = createItem(name, weight, quantity, notes);
+  function handleAdd(
+    name: string,
+    size: ItemSize,
+    notes: string,
+    twoHanded: boolean,
+  ) {
+    const item = createItem(name, size, notes, twoHanded);
     setCharacter((c) => ({ ...c, tray: [...c.tray, item] }));
   }
 
@@ -87,7 +92,7 @@ export default function App() {
             <ItemList
               id="pockets"
               title="Pockets"
-              subtitle="trivial items, 1 lb or less"
+              subtitle="trivial items only"
               items={character.pockets}
               onDelete={handleDelete}
               emptyHint="Drop coins, gems, and other light odds and ends here."

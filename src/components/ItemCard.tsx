@@ -14,7 +14,7 @@ export function ItemCard({ item, onDelete, overlay = false }: Props) {
     disabled: overlay,
   });
 
-  const trivial = item.weight <= 1;
+  const trivial = item.size === 'trivial';
 
   return (
     <div
@@ -27,11 +27,10 @@ export function ItemCard({ item, onDelete, overlay = false }: Props) {
     >
       <div className="item-card__main">
         <span className="item-card__name">{item.name}</span>
-        {item.quantity > 1 && <span className="item-card__qty">×{item.quantity}</span>}
       </div>
       <div className="item-card__meta">
         <span className={`item-card__weight${trivial ? ' item-card__weight--trivial' : ''}`}>
-          {item.weight} lb{trivial ? ' · trivial' : ''}
+          {item.size}{item.twoHanded ? ' · 2H' : ''}
         </span>
         {item.notes && <span className="item-card__notes" title={item.notes}>{item.notes}</span>}
       </div>

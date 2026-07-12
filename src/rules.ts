@@ -1,9 +1,7 @@
-import type { Character, Item, Location, SlotAddress, ZoneKind } from './types';
+import type { Character, Item, ItemSize, Location, SlotAddress, ZoneKind } from './types';
 
 // ---- Tunable constants (retune for your table) ----------------------------
 
-/** Items with weight <= this (in lbs) are "trivial" and may go in Pockets. */
-export const POCKET_WEIGHT_LIMIT = 1;
 /** Body slots everyone has, before Strength. */
 export const BASE_BODY_SLOTS = 2;
 /** Extra Body slots unlockable via Strength (+1/+2/+3). */
@@ -26,13 +24,24 @@ export function backpackSlotCount(): number {
   return BACKPACK_SLOTS;
 }
 
+/** Which zone kinds each size tier is allowed to occupy. */
+export const SIZE_ZONES: Record<ItemSize, ZoneKind[]> = {
+  trivial: ['pockets', 'tray'],
+  normal: ['backpack', 'body', 'mainHand', 'offHand', 'tray'],
+  heavy: ['body', 'mainHand', 'offHand', 'tray'],
+};
+
 export function isPocketEligible(item: Item): boolean {
-  return item.weight <= POCKET_WEIGHT_LIMIT;
+  return item.size === 'trivial';
 }
 
-/** Items over the pocket limit are "slot" items (take a room / equipment slot). */
-export function isSlotItem(item: Item): boolean {
-  return item.weight > POCKET_WEIGHT_LIMIT;
+/** True for weapons that fill both hand slots at once. */
+export function occupiesBothHands(item: Item): boolean {
+  return !!item.twoHanded;
+}
+
+function isHandZone(zone: ZoneKind): boolean {
+  return zone === 'mainHand' || zone === 'offHand';
 }
 
 // ---- Slot address generation ----------------------------------------------
@@ -78,20 +87,27 @@ export interface PlacementResult {
   reason?: string;
 }
 
+/** Human-readable zone names for placement error messages. */
+const ZONE_LABELS: Record<ZoneKind, string> = {
+  mainHand: 'Main Hand',
+  offHand: 'Off Hand',
+  body: 'Body',
+  backpack: 'Backpack',
+  pockets: 'Pockets',
+  tray: 'the tray',
+};
+
 /**
- * Whether `item` may be dropped into a location of the given zone kind.
- * The only hard restriction is that Pockets reject anything over the weight
- * limit; equipment and backpack rooms accept any single item (occupied slots
- * are handled by swapping in `moveItem`).
+ * Whether `item` may be dropped into a location of the given zone kind, based on
+ * its size tier (see `SIZE_ZONES`). Slot occupancy is handled separately by
+ * swapping/displacing in `moveItem`.
  */
 export function canPlace(item: Item, targetZone: ZoneKind): PlacementResult {
-  if (targetZone === 'pockets' && !isPocketEligible(item)) {
-    return {
-      ok: false,
-      reason: `${item.name} is over ${POCKET_WEIGHT_LIMIT} lb — too heavy for pockets.`,
-    };
-  }
-  return { ok: true };
+  if (SIZE_ZONES[item.size].includes(targetZone)) return { ok: true };
+  return {
+    ok: false,
+    reason: `${item.name} is ${item.size} — can't go in ${ZONE_LABELS[targetZone]}.`,
+  };
 }
 
 // ---- Read-only summaries --------------------------------------------------
@@ -102,16 +118,6 @@ export function usedBackpackSlots(character: Character): number {
 
 export function usedBodySlots(character: Character): number {
   return bodySlotIds(character.strength).filter((id) => character.slots[id]).length;
-}
-
-/** Total weight carried across every location (weight * quantity). */
-export function totalWeight(character: Character): number {
-  const items: Item[] = [
-    ...Object.values(character.slots).filter((i): i is Item => Boolean(i)),
-    ...character.pockets,
-    ...character.tray,
-  ];
-  return items.reduce((sum, i) => sum + i.weight * i.quantity, 0);
 }
 
 // ---- Locating & moving items ----------------------------------------------
@@ -168,7 +174,25 @@ export function moveItem(character: Character, itemId: string, to: Location): Mo
   // 2. Place it at the destination.
   if (isListLocation(to)) {
     next[to] = [...next[to], item];
+  } else if (isHandZone(zoneOf(to)) && occupiesBothHands(item)) {
+    // A two-handed weapon always lives at mainHand and covers offHand. Bump any
+    // prior occupants of either hand to the tray (predictable over clever).
+    for (const hand of ['mainHand', 'offHand'] as const) {
+      const occupant = next.slots[hand];
+      if (occupant && occupant.id !== itemId) next.tray = [...next.tray, occupant];
+    }
+    next.slots.mainHand = item;
+    next.slots.offHand = undefined;
   } else {
+    // A one-handed item going into a hand while a two-hander covers both hands
+    // must first evict that two-hander to the tray.
+    if (isHandZone(zoneOf(to))) {
+      const twoHander = next.slots.mainHand;
+      if (twoHander && occupiesBothHands(twoHander) && twoHander.id !== itemId) {
+        next.tray = [...next.tray, twoHander];
+        next.slots.mainHand = undefined;
+      }
+    }
     const occupant = itemAt(next, to);
     next.slots[to] = item;
     if (occupant && occupant.id !== itemId) {

@@ -5,7 +5,6 @@ import {
   MAX_STRENGTH_BODY_SLOTS,
   backpackSlotCount,
   clamp,
-  totalWeight,
   usedBackpackSlots,
   usedBodySlots,
 } from '../rules';
@@ -60,10 +59,6 @@ export function Summary({ character, onNameChange, onStrengthChange, onReset }: 
           <dd>
             {usedBackpackSlots(character)}/{backpackSlotCount()}
           </dd>
-        </div>
-        <div>
-          <dt>Total carried</dt>
-          <dd>{totalWeight(character).toFixed(2)} lb</dd>
         </div>
       </dl>
 

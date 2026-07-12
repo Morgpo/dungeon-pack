@@ -1,9 +1,13 @@
+/** The three size tiers that decide where an item belongs. */
+export type ItemSize = 'trivial' | 'normal' | 'heavy';
+
 export interface Item {
   id: string;
   name: string;
-  weight: number; // in pounds
-  quantity: number;
+  size: ItemSize;
   notes?: string;
+  /** Weapons that occupy both hand slots at once. */
+  twoHanded?: boolean;
 }
 
 /**
@@ -31,7 +35,7 @@ export interface Character {
   strength: number;
   /** Single-item slots keyed by address. Missing/undefined means empty. */
   slots: Record<SlotAddress, Item | undefined>;
-  /** Trivial items (<= 1 lb). Unlimited. */
+  /** Trivial items. Unlimited. */
   pockets: Item[];
   /** Newly added / unassigned items waiting to be placed. */
   tray: Item[];

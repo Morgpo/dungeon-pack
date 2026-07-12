@@ -1,25 +1,29 @@
 import { useState } from 'react';
+import type { ItemSize } from '../types';
 
 interface Props {
-  onAdd: (name: string, weight: number, quantity: number, notes: string) => void;
+  onAdd: (
+    name: string,
+    size: ItemSize,
+    notes: string,
+    twoHanded: boolean,
+  ) => void;
 }
 
 export function AddItemForm({ onAdd }: Props) {
   const [name, setName] = useState('');
-  const [weight, setWeight] = useState('1');
-  const [quantity, setQuantity] = useState('1');
+  const [size, setSize] = useState<ItemSize>('normal');
   const [notes, setNotes] = useState('');
+  const [twoHanded, setTwoHanded] = useState(false);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const w = Number(weight);
-    const q = Math.max(1, Math.floor(Number(quantity) || 1));
-    if (!name.trim() || Number.isNaN(w) || w < 0) return;
-    onAdd(name, w, q, notes);
+    if (!name.trim()) return;
+    onAdd(name, size, notes, twoHanded);
     setName('');
-    setWeight('1');
-    setQuantity('1');
+    setSize('normal');
     setNotes('');
+    setTwoHanded(false);
   }
 
   return (
@@ -36,26 +40,22 @@ export function AddItemForm({ onAdd }: Props) {
       </label>
       <div className="add-form__row">
         <label className="add-form__field">
-          <span>Weight (lb)</span>
-          <input
-            type="number"
-            min="0"
-            step="0.1"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-          />
-        </label>
-        <label className="add-form__field">
-          <span>Qty</span>
-          <input
-            type="number"
-            min="1"
-            step="1"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
+          <span>Size</span>
+          <select value={size} onChange={(e) => setSize(e.target.value as ItemSize)}>
+            <option value="trivial">Trivial (pockets)</option>
+            <option value="normal">Normal (backpack)</option>
+            <option value="heavy">Heavy (body)</option>
+          </select>
         </label>
       </div>
+      <label className="add-form__checkbox">
+        <input
+          type="checkbox"
+          checked={twoHanded}
+          onChange={(e) => setTwoHanded(e.target.checked)}
+        />
+        <span>Two-handed (fills both hands)</span>
+      </label>
       <label className="add-form__field">
         <span>Notes (optional)</span>
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="+1, silvered…" />

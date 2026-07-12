@@ -10,6 +10,7 @@ interface Props {
 /** The dungeon-sheet layout: hands, body column, and the 6 backpack rooms. */
 export function Sheet({ character, onDelete }: Props) {
   const bodyIds = bodySlotIds(character.strength);
+  const mainHand = character.slots['mainHand'];
 
   return (
     <div className="sheet">
@@ -18,7 +19,7 @@ export function Sheet({ character, onDelete }: Props) {
           address="mainHand"
           label="Main Hand"
           variant="equipment"
-          item={character.slots['mainHand']}
+          item={mainHand}
           onDelete={onDelete}
         />
         <Slot
@@ -27,6 +28,7 @@ export function Sheet({ character, onDelete }: Props) {
           variant="equipment"
           item={character.slots['offHand']}
           onDelete={onDelete}
+          coveredBy={mainHand?.twoHanded ? mainHand.name : undefined}
         />
       </div>
 

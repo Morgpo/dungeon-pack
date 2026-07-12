@@ -1,4 +1,4 @@
-import type { Character, Item } from './types';
+import type { Character, Item, ItemSize } from './types';
 
 export function createId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -9,11 +9,17 @@ export function createId(): string {
 
 export function createItem(
   name: string,
-  weight: number,
-  quantity = 1,
+  size: ItemSize,
   notes?: string,
+  twoHanded = false,
 ): Item {
-  return { id: createId(), name: name.trim(), weight, quantity, notes: notes?.trim() || undefined };
+  return {
+    id: createId(),
+    name: name.trim(),
+    size,
+    notes: notes?.trim() || undefined,
+    twoHanded: twoHanded || undefined,
+  };
 }
 
 export function createDefaultCharacter(): Character {
@@ -24,9 +30,10 @@ export function createDefaultCharacter(): Character {
     slots: {},
     pockets: [],
     tray: [
-      createItem('Longsword', 3),
-      createItem('Torch', 1),
-      createItem('Gold pieces', 0.02, 25),
+      createItem('Longsword', 'normal'),
+      createItem('Greataxe', 'heavy', undefined, true),
+      createItem('Torch', 'trivial'),
+      createItem('Gold pieces', 'trivial'),
     ],
   };
 }
