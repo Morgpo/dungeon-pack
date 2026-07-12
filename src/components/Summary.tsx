@@ -13,16 +13,24 @@ interface Props {
   character: Character;
   onNameChange: (name: string) => void;
   onStrengthChange: (strength: number) => void;
+  onGoldChange: (gold: number) => void;
   onReset: () => void;
 }
 
-export function Summary({ character, onNameChange, onStrengthChange, onReset }: Props) {
+export function Summary({
+  character,
+  onNameChange,
+  onStrengthChange,
+  onGoldChange,
+  onReset,
+}: Props) {
   const strengthUnlocked = clamp(Math.floor(character.strength), 0, MAX_STRENGTH_BODY_SLOTS);
 
   return (
     <aside className="summary">
+      <h2 className="summary__title">Character</h2>
       <label className="summary__field">
-        <span>Character</span>
+        <span>Name</span>
         <input
           className="summary__name"
           value={character.name}
@@ -39,6 +47,18 @@ export function Summary({ character, onNameChange, onStrengthChange, onReset }: 
           value={character.strength}
           onChange={(e) => onStrengthChange(Number(e.target.value) || 0)}
           aria-label="Strength modifier"
+        />
+      </label>
+
+      <label className="summary__field">
+        <span>Total gold</span>
+        <input
+          type="number"
+          min="0"
+          className="summary__gold"
+          value={character.gold ?? 0}
+          onChange={(e) => onGoldChange(Number(e.target.value) || 0)}
+          aria-label="Total gold"
         />
       </label>
 

@@ -17,7 +17,7 @@ function item(over: Partial<Item> & { id: string; name: string }): Item {
 }
 
 function emptyCharacter(strength = 0): Character {
-  return { id: 'c1', name: 'Test', strength, slots: {}, pockets: [], tray: [] };
+  return { id: 'c1', name: 'Test', strength, gold: 0, slots: {}, pockets: [], tray: [] };
 }
 
 describe('bodySlotCount', () => {

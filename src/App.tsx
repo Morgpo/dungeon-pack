@@ -104,6 +104,7 @@ export default function App() {
               character={character}
               onNameChange={(name) => setCharacter((c) => ({ ...c, name }))}
               onStrengthChange={(strength) => setCharacter((c) => ({ ...c, strength }))}
+              onGoldChange={(gold) => setCharacter((c) => ({ ...c, gold }))}
               onReset={handleReset}
             />
           </div>

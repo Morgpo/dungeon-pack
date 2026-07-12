@@ -27,6 +27,7 @@ export function createDefaultCharacter(): Character {
     id: createId(),
     name: 'New Adventurer',
     strength: 0,
+    gold: 0,
     slots: {},
     pockets: [],
     tray: [

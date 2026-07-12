@@ -469,6 +469,7 @@ select:focus {
   font-weight: 400;
 }
 
+.summary__title,
 .add-form__title {
   margin: 0;
   font-size: 16px;

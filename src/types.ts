@@ -33,6 +33,8 @@ export interface Character {
   name: string;
   /** Strength modifier ("+X"); only unlocks extra Body slots. */
   strength: number;
+  /** Total gold pieces carried, tracked separately from inventory items. */
+  gold: number;
   /** Single-item slots keyed by address. Missing/undefined means empty. */
   slots: Record<SlotAddress, Item | undefined>;
   /** Trivial items. Unlimited. */
