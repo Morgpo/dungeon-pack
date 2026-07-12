@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import type { Character, ItemSize, Location } from './types';
+import type { Character, Item, ItemSize, Location } from './types';
 import { deleteItem, moveItem } from './rules';
 import { createDefaultCharacter, createItem, duplicateItem } from './character';
 import { useLocalStorage } from './useLocalStorage';
@@ -27,6 +27,7 @@ export default function App() {
   );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
 
   // A small drag distance prevents clicks (like the delete ×) from starting drags.
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -69,12 +70,29 @@ export default function App() {
   ) {
     const item = createItem(name, size, notes, twoHanded);
     setCharacter((c) => ({ ...c, tray: [...c.tray, item] }));
+    setEditingItem(null);
+  }
+
+  function handleEdit(id: string) {
+    const item = findItem(character, id);
+    if (!item) return;
+    setCharacter((c) => deleteItem(c, id));
+    setEditingItem(item);
+    setMessage(null);
+  }
+
+  function handleCancelEdit() {
+    if (editingItem) {
+      setCharacter((c) => ({ ...c, tray: [...c.tray, editingItem] }));
+    }
+    setEditingItem(null);
   }
 
   function handleReset() {
     if (confirm('Reset this character? All items will be cleared.')) {
       setCharacter(createDefaultCharacter());
       setMessage(null);
+      setEditingItem(null);
     }
   }
 
@@ -94,7 +112,12 @@ export default function App() {
 
         <div className="app__grid">
           <div className="app__main">
-            <Sheet character={character} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+            <Sheet
+              character={character}
+              onDelete={handleDelete}
+              onDuplicate={handleDuplicate}
+              onEdit={handleEdit}
+            />
             <ItemList
               id="pockets"
               title="Pockets"
@@ -102,6 +125,7 @@ export default function App() {
               items={character.pockets}
               onDelete={handleDelete}
               onDuplicate={handleDuplicate}
+              onEdit={handleEdit}
               emptyHint="Drop coins, gems, and other light odds and ends here."
             />
           </div>
@@ -117,7 +141,12 @@ export default function App() {
           </div>
 
           <div className="app__side app__side--left">
-            <AddItemForm onAdd={handleAdd} />
+            <AddItemForm
+              key={editingItem?.id ?? 'new'}
+              onAdd={handleAdd}
+              editingItem={editingItem}
+              onCancelEdit={handleCancelEdit}
+            />
             <ItemList
               id="tray"
               title="Unassigned"
@@ -125,6 +154,7 @@ export default function App() {
               items={character.tray}
               onDelete={handleDelete}
               onDuplicate={handleDuplicate}
+              onEdit={handleEdit}
               emptyHint="Newly added items land here."
             />
           </div>

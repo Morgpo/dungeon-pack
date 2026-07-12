@@ -5,11 +5,12 @@ interface Props {
   item: Item;
   onDelete?: (id: string) => void;
   onDuplicate?: (id: string) => void;
+  onEdit?: (id: string) => void;
   /** When true, render a static (non-draggable) copy for the drag overlay. */
   overlay?: boolean;
 }
 
-export function ItemCard({ item, onDelete, onDuplicate, overlay = false }: Props) {
+export function ItemCard({ item, onDelete, onDuplicate, onEdit, overlay = false }: Props) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: item.id,
     disabled: overlay,
@@ -35,10 +36,25 @@ export function ItemCard({ item, onDelete, onDuplicate, overlay = false }: Props
         </span>
         {item.notes && <span className="item-card__notes" title={item.notes}>{item.notes}</span>}
       </div>
+      {onEdit && !overlay && (
+        <button
+          type="button"
+          className="item-card__action item-card__edit"
+          aria-label={`Edit ${item.name}`}
+          title="Edit item"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(item.id);
+          }}
+        >
+          ✎
+        </button>
+      )}
       {onDuplicate && !overlay && (
         <button
           type="button"
-          className="item-card__duplicate"
+          className="item-card__action item-card__duplicate"
           aria-label={`Duplicate ${item.name}`}
           title="Copy to Unassigned"
           onPointerDown={(e) => e.stopPropagation()}
@@ -53,7 +69,7 @@ export function ItemCard({ item, onDelete, onDuplicate, overlay = false }: Props
       {onDelete && !overlay && (
         <button
           type="button"
-          className="item-card__delete"
+          className="item-card__action item-card__delete"
           aria-label={`Delete ${item.name}`}
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => {

@@ -6,10 +6,11 @@ interface Props {
   character: Character;
   onDelete: (id: string) => void;
   onDuplicate?: (id: string) => void;
+  onEdit?: (id: string) => void;
 }
 
 /** The dungeon-sheet layout: hands, body column, and the 6 backpack rooms. */
-export function Sheet({ character, onDelete, onDuplicate }: Props) {
+export function Sheet({ character, onDelete, onDuplicate, onEdit }: Props) {
   const bodyIds = bodySlotIds(character.strength);
   const mainHand = character.slots['mainHand'];
 
@@ -23,6 +24,7 @@ export function Sheet({ character, onDelete, onDuplicate }: Props) {
           item={mainHand}
           onDelete={onDelete}
           onDuplicate={onDuplicate}
+          onEdit={onEdit}
         />
         <Slot
           address="offHand"
@@ -31,6 +33,7 @@ export function Sheet({ character, onDelete, onDuplicate }: Props) {
           item={character.slots['offHand']}
           onDelete={onDelete}
           onDuplicate={onDuplicate}
+          onEdit={onEdit}
           coveredBy={mainHand?.twoHanded ? mainHand.name : undefined}
         />
       </div>
@@ -50,6 +53,7 @@ export function Sheet({ character, onDelete, onDuplicate }: Props) {
                 item={character.slots[id]}
                 onDelete={onDelete}
                 onDuplicate={onDuplicate}
+                onEdit={onEdit}
               />
             );
           })}
@@ -68,6 +72,7 @@ export function Sheet({ character, onDelete, onDuplicate }: Props) {
               item={character.slots[id]}
               onDelete={onDelete}
               onDuplicate={onDuplicate}
+              onEdit={onEdit}
             />
           ))}
         </div>

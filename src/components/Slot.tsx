@@ -8,6 +8,7 @@ interface Props {
   item?: Item;
   onDelete: (id: string) => void;
   onDuplicate?: (id: string) => void;
+  onEdit?: (id: string) => void;
   /** Optional small badge, e.g. the room number or "STR +1". */
   badge?: string;
   variant?: 'equipment' | 'room';
@@ -21,6 +22,7 @@ export function Slot({
   item,
   onDelete,
   onDuplicate,
+  onEdit,
   badge,
   variant = 'room',
   coveredBy,
@@ -41,7 +43,7 @@ export function Slot({
       </div>
       <div className="slot__body">
         {item ? (
-          <ItemCard item={item} onDelete={onDelete} onDuplicate={onDuplicate} />
+          <ItemCard item={item} onDelete={onDelete} onDuplicate={onDuplicate} onEdit={onEdit} />
         ) : covered ? (
           <span className="slot__covered">⟵ {coveredBy} (both hands)</span>
         ) : (

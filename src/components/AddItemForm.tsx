@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ItemSize } from '../types';
+import type { Item, ItemSize } from '../types';
 
 interface Props {
   onAdd: (
@@ -8,13 +8,16 @@ interface Props {
     notes: string,
     twoHanded: boolean,
   ) => void;
+  /** When set, the form is prefilled to edit this item instead of adding a fresh one. */
+  editingItem?: Item | null;
+  onCancelEdit?: () => void;
 }
 
-export function AddItemForm({ onAdd }: Props) {
-  const [name, setName] = useState('');
-  const [size, setSize] = useState<ItemSize>('normal');
-  const [notes, setNotes] = useState('');
-  const [twoHanded, setTwoHanded] = useState(false);
+export function AddItemForm({ onAdd, editingItem, onCancelEdit }: Props) {
+  const [name, setName] = useState(editingItem?.name ?? '');
+  const [size, setSize] = useState<ItemSize>(editingItem?.size ?? 'normal');
+  const [notes, setNotes] = useState(editingItem?.notes ?? '');
+  const [twoHanded, setTwoHanded] = useState(!!editingItem?.twoHanded);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,7 +36,7 @@ export function AddItemForm({ onAdd }: Props) {
 
   return (
     <form className="add-form" onSubmit={submit}>
-      <h2 className="add-form__title">Add item</h2>
+      <h2 className="add-form__title">{editingItem ? 'Edit item' : 'Add item'}</h2>
       <label className="add-form__field add-form__field--name">
         <span>Name</span>
         <input
@@ -67,9 +70,16 @@ export function AddItemForm({ onAdd }: Props) {
         <span>Notes (optional)</span>
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="+1, silvered…" />
       </label>
-      <button type="submit" className="add-form__submit">
-        Add to tray
-      </button>
+      <div className="add-form__actions">
+        <button type="submit" className="add-form__submit">
+          {editingItem ? 'Save item' : 'Add to tray'}
+        </button>
+        {editingItem && (
+          <button type="button" className="add-form__cancel" onClick={onCancelEdit}>
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

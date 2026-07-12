@@ -251,7 +251,7 @@ body {
   background: linear-gradient(180deg, #2c3042, #262a39);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
-  padding: 8px 26px 8px 10px;
+  padding: 8px 66px 8px 10px;
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -306,31 +306,9 @@ body {
   white-space: nowrap;
 }
 
-.item-card__delete {
+.item-card__action {
   position: absolute;
   top: 4px;
-  right: 4px;
-  width: 18px;
-  height: 18px;
-  line-height: 1;
-  padding: 0;
-  border: none;
-  border-radius: 5px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.item-card__delete:hover {
-  background: var(--danger);
-  color: #fff;
-}
-
-.item-card__duplicate {
-  position: absolute;
-  top: 4px;
-  right: 24px;
   width: 18px;
   height: 18px;
   line-height: 1;
@@ -343,8 +321,27 @@ body {
   cursor: pointer;
 }
 
+.item-card__edit {
+  right: 44px;
+}
+
+.item-card__duplicate {
+  right: 24px;
+}
+
+.item-card__delete {
+  right: 4px;
+  font-size: 16px;
+}
+
+.item-card__edit:hover,
 .item-card__duplicate:hover {
   background: var(--accent);
+  color: #fff;
+}
+
+.item-card__delete:hover {
+  background: var(--danger);
   color: #fff;
 }
 
@@ -506,7 +503,17 @@ button {
   cursor: pointer;
 }
 
+.add-form__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add-form__actions .add-form__submit {
+  flex: 1;
+}
+
 .add-form__submit,
+.add-form__cancel,
 .summary__reset {
   border: none;
   border-radius: 8px;
@@ -522,6 +529,17 @@ button {
 
 .add-form__submit:hover {
   filter: brightness(1.08);
+}
+
+.add-form__cancel {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.add-form__cancel:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .summary__reset {
