@@ -19,11 +19,16 @@ export function AddItemForm({ onAdd }: Props) {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    onAdd(name, size, notes, twoHanded);
+    onAdd(name, size, notes, size === 'heavy' && twoHanded);
     setName('');
     setSize('normal');
     setNotes('');
     setTwoHanded(false);
+  }
+
+  function changeSize(next: ItemSize) {
+    setSize(next);
+    if (next !== 'heavy') setTwoHanded(false);
   }
 
   return (
@@ -41,21 +46,23 @@ export function AddItemForm({ onAdd }: Props) {
       <div className="add-form__row">
         <label className="add-form__field">
           <span>Size</span>
-          <select value={size} onChange={(e) => setSize(e.target.value as ItemSize)}>
+          <select value={size} onChange={(e) => changeSize(e.target.value as ItemSize)}>
             <option value="trivial">Trivial (pockets)</option>
             <option value="normal">Normal (backpack)</option>
             <option value="heavy">Heavy (body)</option>
           </select>
         </label>
       </div>
-      <label className="add-form__checkbox">
-        <input
-          type="checkbox"
-          checked={twoHanded}
-          onChange={(e) => setTwoHanded(e.target.checked)}
-        />
-        <span>Two-handed (fills both hands)</span>
-      </label>
+      {size === 'heavy' && (
+        <label className="add-form__checkbox">
+          <input
+            type="checkbox"
+            checked={twoHanded}
+            onChange={(e) => setTwoHanded(e.target.checked)}
+          />
+          <span>Two-handed (fills both hands)</span>
+        </label>
+      )}
       <label className="add-form__field">
         <span>Notes (optional)</span>
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="+1, silvered…" />

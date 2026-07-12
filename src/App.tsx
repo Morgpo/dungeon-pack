@@ -99,13 +99,16 @@ export default function App() {
             />
           </div>
 
-          <div className="app__side">
+          <div className="app__side app__side--right">
             <Summary
               character={character}
               onNameChange={(name) => setCharacter((c) => ({ ...c, name }))}
               onStrengthChange={(strength) => setCharacter((c) => ({ ...c, strength }))}
               onReset={handleReset}
             />
+          </div>
+
+          <div className="app__side app__side--left">
             <AddItemForm onAdd={handleAdd} />
             <ItemList
               id="tray"
